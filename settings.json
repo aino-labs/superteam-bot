@@ -4,16 +4,18 @@
     "Как создать "
   ],
   "sources": {
-    "events": "",
-    "competitions": ""
-  },
-  "update_intervals": {
-    "events": 360,
-    "competitions": 360
+    "events": {
+      "url": "",
+      "update_interval": 360
+    },
+    "competitions": {
+      "url": "",
+      "update_interval": 360
+    }
   },
   "llm": {
     "language": "ru",
     "max_answer_length": 500,
-    "emoji": false
+    "use_emoji": false
   }
 }
