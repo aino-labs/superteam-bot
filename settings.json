@@ -1,0 +1,19 @@
+{
+  "faq": [
+    "Как зарегистрироваться на мероприятие",
+    "Как создать "
+  ],
+  "sources": {
+    "events": "",
+    "competitions": ""
+  },
+  "update_intervals": {
+    "events": 360,
+    "competitions": 360
+  },
+  "llm": {
+    "language": "ru",
+    "max_answer_length": 500,
+    "emoji": false
+  }
+}
