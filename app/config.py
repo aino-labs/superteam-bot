@@ -13,6 +13,8 @@ class Config(BaseSettings):
     bot_token: str
     llm: LLMOptions
 
+    logging_path: str = 'logs'
+
 
 config = Config(_env_file='.env')
 
