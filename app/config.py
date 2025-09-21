@@ -3,8 +3,8 @@ from pydantic import BaseModel
 
 
 class LLMOptions(BaseModel):
+    api_key: str
     base_url: str
-    token: str
 
 
 class Config(BaseSettings):
@@ -14,6 +14,7 @@ class Config(BaseSettings):
     llm: LLMOptions
 
     logging_path: str = 'logs'
+    log_level: str = 'INFO'
 
 
 config = Config(_env_file='.env')

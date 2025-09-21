@@ -1,11 +1,16 @@
+import logging
+
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from aiogram.filters.callback_data import CallbackData
 
 from app.settings import settings
+from app.config import config
+from app.ai import AIService
 
 router = Router()
+ai_service = AIService(config.llm.api_key, config.llm.base_url)
 
 
 class FaqCallback(CallbackData, prefix="faq"):
@@ -58,7 +63,8 @@ async def faq_page_callback(callback: CallbackQuery, callback_data=FaqCallback):
 
 @router.callback_query(FaqCallback.filter(F.action == 'ask'))
 async def faq_page_callback(callback: CallbackQuery, callback_data=FaqCallback):
-    pass
+    response = await ai_service.ask(settings.faq[callback_data.value])
+    await callback.message.answer(response)
 
 
 __all__ = ['router']
