@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
-from app.keyboards import get_paginated_keyboard, PaginatedCallbackBase, PaginatedAction
+from app.keyboards import get_paginated_keyboard, PaginatedCallbackBase, PaginatedAction, MenuCallback
 
 from app.settings import settings
 from app.ai import LLMService
@@ -13,9 +13,14 @@ class FaqCallback(PaginatedCallbackBase, prefix='faq'):
 
 
 @router.message(Command('faq'))
-async def start(msg: Message):
+async def faq(msg: Message):
     await msg.answer('Выберите вопрос:',
                      reply_markup=get_paginated_keyboard(settings.faq, FaqCallback))
+
+
+@router.callback_query(MenuCallback.filter(F.command == 'faq'))
+async def faq_callback(callback: CallbackQuery):
+    await faq(callback.message)
 
 
 @router.callback_query(FaqCallback.filter(F.action == PaginatedAction.page))

@@ -1,8 +1,9 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from app.settings import settings
+from app.keyboards import get_menu_keyboard, MenuCallback
 
 router = Router()
 
@@ -17,9 +18,14 @@ async def privacy(msg: Message):
     await msg.answer(settings.messages.privacy)
 
 
+@router.callback_query(MenuCallback.filter(F.command == 'privacy'))
+async def privacy_callback(callback: CallbackQuery):
+    await privacy(callback.message)
+
+
 @router.message(Command('menu'))
 async def menu(msg: Message):
-    pass
+    await msg.answer('Быстрые команды:', reply_markup=get_menu_keyboard())
 
 
 __all__ = ['router']

@@ -1,6 +1,6 @@
 from enum import Enum
 from sys import prefix
-
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from aiogram.filters.callback_data import CallbackData
 
@@ -49,3 +49,17 @@ def get_paginated_keyboard(items: list, callback_class: type[PaginatedCallbackBa
         ]
         keyboard.append(nav_buttons)
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+class MenuCallback(CallbackData, prefix='menu'):
+    command: str
+
+
+def get_menu_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text='FAQ', callback_data=MenuCallback(command='faq'))
+    builder.button(text='Events', callback_data=MenuCallback(command='events'))
+    builder.button(text='Challenges', callback_data=MenuCallback(command='challenges'))
+    builder.button(text='Privacy', callback_data=MenuCallback(command='privacy'))
+    builder.adjust(2)
+    return builder.as_markup()
