@@ -3,6 +3,10 @@
     "Как зарегистрироваться на мероприятие",
     "Как создать "
   ],
+  "messages": {
+    "start": "Test start message",
+    "privacy": "test privacy message"
+  },
   "sources": {
     "events": {
       "url": "",

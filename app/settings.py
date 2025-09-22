@@ -12,8 +12,13 @@ class LLMSettings(BaseModel):
     use_emoji: bool
 
 
+class Messages(BaseModel):
+    start: str
+    privacy: str
+
 class Settings(BaseModel):
     faq: list[str]
+    messages: Messages
     sources: dict[str, DataSource]
     llm: LLMSettings
 
