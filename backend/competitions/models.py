@@ -3,26 +3,26 @@ from django.db import models
 
 class Competition(models.Model):
     title = models.CharField(
-        'Название',
+        'Title',
         max_length=128,
     )
     prize = models.CharField(
-        'Приз',
+        'Prize',
         max_length=128,
         blank=True,
         null=True,
     )
     deadline = models.DateTimeField(
-        "Срок подачи заявок",
+        "Application deadline",
     )
     source_url = models.URLField(
-        'Исходная ссылка',
+        'Source URL',
         blank=True,
         null=True,
     )
 
     class Meta:
-        verbose_name = "Соревнование"
-        verbose_name_plural = "Соревнования"
+        verbose_name = "Competition"
+        verbose_name_plural = "Competitions"
         db_table = 'competitions'
         ordering = ['deadline']

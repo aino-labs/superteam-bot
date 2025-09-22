@@ -3,30 +3,30 @@ from django.db import models
 
 class Event(models.Model):
     title = models.CharField(
-        'Название',
+        'Title',
         max_length=128,
     )
     event_date = models.DateTimeField(
-        'Дата проведения'
+        'Event date'
     )
     location = models.CharField(
-        'Место проведения',
+        'Location',
         max_length=128,
         blank=True,
         null=True,
     )
     rsvp_link = models.URLField(
-        'Ссылка RSVP',
+        'RSVP link',
         blank=True,
         null=True,
     )
     source_url = models.URLField(
-        'Исходная ссылка',
+        'Source URL',
         blank=True,
         null=True,
     )
 
     class Meta:
-        verbose_name = 'Событие'
-        verbose_name_plural = 'События'
+        verbose_name = 'Event'
+        verbose_name_plural = 'Events'
         db_table = 'events'
