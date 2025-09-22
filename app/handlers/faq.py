@@ -6,11 +6,9 @@ from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, C
 from aiogram.filters.callback_data import CallbackData
 
 from app.settings import settings
-from app.config import config
-from app.ai import AIService
+from app.ai import LLMService
 
 router = Router()
-ai_service = AIService(config.llm.api_key, config.llm.base_url)
 
 
 class FaqCallback(CallbackData, prefix="faq"):
@@ -56,14 +54,14 @@ async def start(msg: Message):
 
 
 @router.callback_query(FaqCallback.filter(F.action == 'page'))
-async def faq_page_callback(callback: CallbackQuery, callback_data=FaqCallback):
+async def faq_page_callback(callback: CallbackQuery, callback_data: FaqCallback):
     await callback.message.edit_reply_markup(
         reply_markup=get_questions_keyboard(settings.faq, page=callback_data.value))
 
 
 @router.callback_query(FaqCallback.filter(F.action == 'ask'))
-async def faq_page_callback(callback: CallbackQuery, callback_data=FaqCallback):
-    response = await ai_service.ask(settings.faq[callback_data.value])
+async def faq_page_callback(callback: CallbackQuery, callback_data: FaqCallback, llm_service: LLMService):
+    response = await llm_service.ask(settings.faq[callback_data.value])
     await callback.message.answer(response)
 
 
