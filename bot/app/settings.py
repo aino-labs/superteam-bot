@@ -27,5 +27,8 @@ class Settings(BaseModel):
 with open("settings.json", "r", encoding="utf-8") as f:
     settings = Settings.model_validate_json(f.read())
 
+with open('knowledgebase.md', 'r') as f:
+    kb = f.read()
 
-__all__ = ["settings"]
+
+__all__ = ["settings", 'kb']

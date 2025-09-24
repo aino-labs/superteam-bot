@@ -1,5 +1,7 @@
 from openai import AsyncOpenAI
 
+from app.settings import kb
+from app.ai_prompts import service_assistant
 
 class LLMService:
     def __init__(self, api_key: str, base_url: str | None, model: str = 'mistral-small-2501'):
@@ -10,7 +12,10 @@ class LLMService:
         try:
             response = await self.client.chat.completions.create(
                 model=self.model,
-                messages=[{'role': 'user', 'content': prompt}],
+                messages=[
+                    {'role': 'system', 'content': service_assistant + kb},
+                    {'role': 'user', 'content': prompt}]
+                ,
                 temperature=0.7,
                 max_tokens=max_tokens
             )
