@@ -15,7 +15,7 @@ class FaqCallback(PaginatedCallbackBase, prefix='faq'):
 @router.message(Command('faq'))
 async def faq(msg: Message):
     await msg.answer('Выберите вопрос:',
-                     reply_markup=get_paginated_keyboard(settings.faq, FaqCallback))
+                     reply_markup=get_paginated_keyboard(list(enumerate(settings.faq)), FaqCallback))
 
 
 @router.callback_query(MenuCallback.filter(F.command == 'faq'))
@@ -26,7 +26,7 @@ async def faq_callback(callback: CallbackQuery):
 @router.callback_query(FaqCallback.filter(F.action == PaginatedAction.page))
 async def faq_page_callback(callback: CallbackQuery, callback_data: FaqCallback):
     await callback.message.edit_reply_markup(
-        reply_markup=get_paginated_keyboard(settings.faq, FaqCallback, page=callback_data.value))
+        reply_markup=get_paginated_keyboard(list(enumerate(settings.faq)), FaqCallback, page=callback_data.value))
 
 
 @router.callback_query(FaqCallback.filter(F.action == PaginatedAction.select))

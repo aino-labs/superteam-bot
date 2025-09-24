@@ -16,13 +16,13 @@ class PaginatedCallbackBase(CallbackData, prefix='paginated'):
     value: int
 
 
-def get_paginated_keyboard(items: list, callback_class: type[PaginatedCallbackBase], page: int = 1, per_page: int = 5):
+def get_paginated_keyboard(items: list[tuple], callback_class: type[PaginatedCallbackBase], page: int = 1, per_page: int = 5):
     keyboard = [
         [
             InlineKeyboardButton(
-                text=items[i],
+                text=items[i][1],
                 callback_data=callback_class(action=PaginatedAction.select,
-                                                value=i).pack()
+                                                value=items[i][0]).pack()
             )
         ]
         for i in range((page - 1) * per_page, min(page * per_page, len(items)))
