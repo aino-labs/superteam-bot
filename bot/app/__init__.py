@@ -3,6 +3,7 @@ from typing import Any, Callable
 from aiogram import Bot, Dispatcher, BaseMiddleware
 from aiogram.client.default import DefaultBotProperties
 from aiogram.types import TelegramObject
+from aiogram.enums import ParseMode
 
 from app.api import APIClient
 from app.config import config
@@ -12,7 +13,8 @@ from app.handlers import common_router, faq_router, events_router, challenges_ro
 
 
 
-bot = Bot(config.bot_token, default=DefaultBotProperties(parse_mode='HTML'))
+
+bot = Bot(config.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN))
 
 dp = Dispatcher()
 dp['llm_service'] = LLMService(config.llm.api_key, config.llm.base_url)

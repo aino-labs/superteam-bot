@@ -5,6 +5,7 @@ from aiogram.types import Message, CallbackQuery
 from app import APIClient
 from app.cache import cached
 from app.keyboards import MenuCallback, PaginatedCallbackBase, get_paginated_keyboard, PaginatedAction
+from app.settings import settings
 
 router = Router()
 
@@ -31,14 +32,16 @@ async def challenges_callback(callback: CallbackQuery):
 
 
 @router.callback_query(ChallengesCallback.filter(F.action == PaginatedAction.page))
-async def faq_page_callback(callback: CallbackQuery, callback_data: ChallengesCallback, api_client: APIClient):
+async def challenges_page_callback(callback: CallbackQuery, callback_data: ChallengesCallback, api_client: APIClient):
     events = await get_challenges(callback.from_user.id, api_client)
     await callback.message.edit_reply_markup(
         reply_markup=get_paginated_keyboard(events, ChallengesCallback, page=callback_data.value))
 
 
 @router.callback_query(ChallengesCallback.filter(F.action == PaginatedAction.select))
-async def faq_page_callback(callback: CallbackQuery, callback_data: ChallengesCallback, api_client: APIClient):
-    pass
+async def challenges_select_callback(callback: CallbackQuery, callback_data: ChallengesCallback, api_client: APIClient):
+    challenge = await api_client.get_challenge(callback_data.value)
+    await callback.message.answer(settings.messages.challenge_description.format(**vars(challenge)))
+    # print(await api_client.get_challenge(callback_data.value))
 
 __all__ = ['router']

@@ -2,6 +2,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
+from app.settings import settings
 from app.api import APIClient
 from app.cache import cached
 from app.keyboards import MenuCallback, get_paginated_keyboard, PaginatedCallbackBase, PaginatedAction
@@ -32,14 +33,15 @@ async def events_callback(callback: CallbackQuery):
 
 
 @router.callback_query(EventsCallback.filter(F.action == PaginatedAction.page))
-async def faq_page_callback(callback: CallbackQuery, callback_data: EventsCallback, api_client: APIClient):
+async def events_page_callback(callback: CallbackQuery, callback_data: EventsCallback, api_client: APIClient):
     events = await get_events(callback.from_user.id, api_client)
     await callback.message.edit_reply_markup(
         reply_markup=get_paginated_keyboard(events, EventsCallback, page=callback_data.value))
 
 
 @router.callback_query(EventsCallback.filter(F.action == PaginatedAction.select))
-async def faq_page_callback(callback: CallbackQuery, callback_data: EventsCallback, api_client: APIClient):
-    pass
+async def events_select_callback(callback: CallbackQuery, callback_data: EventsCallback, api_client: APIClient):
+    event = await api_client.get_event(callback_data.value)
+    await callback.message.answer(settings.messages.event_description.format(**vars(event)))
 
 __all__ = ['router']

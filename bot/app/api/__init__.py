@@ -14,7 +14,17 @@ class APIClient:
         resp.raise_for_status()
         return [Challenge(**el) for el in resp.json()['results']]
 
+    async def get_challenge(self, challenge_id: int) -> Challenge:
+        resp = await self.client.get(f'/competitions/{challenge_id}/')
+        resp.raise_for_status()
+        return Challenge(**resp.json())
+
     async def get_events(self) -> list[Event]:
         resp = await self.client.get('/events/')
         resp.raise_for_status()
         return [Event(**el) for el in resp.json()['results']]
+
+    async def get_event(self, event_id: int) -> Event:
+        resp = await self.client.get(f'/events/{event_id}/')
+        resp.raise_for_status()
+        return Event(**resp.json())
