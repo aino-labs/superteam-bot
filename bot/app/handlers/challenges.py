@@ -6,6 +6,7 @@ from app import APIClient
 from app.cache import cached
 from app.keyboards import MenuCallback, PaginatedCallbackBase, get_paginated_keyboard, PaginatedAction
 from app.settings import settings
+from app.utils import fmt_date
 
 router = Router()
 
@@ -27,8 +28,8 @@ async def challenges(msg: Message, api_client: APIClient):
 
 
 @router.callback_query(MenuCallback.filter(F.command == 'challenges'))
-async def challenges_callback(callback: CallbackQuery):
-    await challenges(callback.message)
+async def challenges_callback(callback: CallbackQuery, api_client: APIClient):
+    await challenges(callback.message, api_client)
 
 
 @router.callback_query(ChallengesCallback.filter(F.action == PaginatedAction.page))
@@ -41,7 +42,7 @@ async def challenges_page_callback(callback: CallbackQuery, callback_data: Chall
 @router.callback_query(ChallengesCallback.filter(F.action == PaginatedAction.select))
 async def challenges_select_callback(callback: CallbackQuery, callback_data: ChallengesCallback, api_client: APIClient):
     challenge = await api_client.get_challenge(callback_data.value)
-    await callback.message.answer(settings.messages.challenge_description.format(**vars(challenge)))
-    # print(await api_client.get_challenge(callback_data.value))
+    await callback.message.answer(settings.messages.challenge_description.format(
+        **{**vars(challenge), **{'deadline': fmt_date(challenge.deadline)}}))
 
 __all__ = ['router']

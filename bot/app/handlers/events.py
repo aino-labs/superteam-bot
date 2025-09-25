@@ -6,6 +6,7 @@ from app.settings import settings
 from app.api import APIClient
 from app.cache import cached
 from app.keyboards import MenuCallback, get_paginated_keyboard, PaginatedCallbackBase, PaginatedAction
+from app.utils import fmt_date
 
 
 class EventsCallback(PaginatedCallbackBase, prefix='events'):
@@ -28,8 +29,8 @@ async def events(msg: Message, api_client: APIClient):
 
 
 @router.callback_query(MenuCallback.filter(F.command == 'events'))
-async def events_callback(callback: CallbackQuery):
-    await events(callback.message)
+async def events_callback(callback: CallbackQuery, api_client: APIClient):
+    await events(callback.message, api_client)
 
 
 @router.callback_query(EventsCallback.filter(F.action == PaginatedAction.page))
@@ -42,6 +43,7 @@ async def events_page_callback(callback: CallbackQuery, callback_data: EventsCal
 @router.callback_query(EventsCallback.filter(F.action == PaginatedAction.select))
 async def events_select_callback(callback: CallbackQuery, callback_data: EventsCallback, api_client: APIClient):
     event = await api_client.get_event(callback_data.value)
-    await callback.message.answer(settings.messages.event_description.format(**vars(event)))
+    await callback.message.answer(settings.messages.event_description.format(
+        **{**vars(event), **{'event_date': fmt_date(event.event_date)}}))
 
 __all__ = ['router']
