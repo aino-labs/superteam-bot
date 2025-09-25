@@ -1,11 +1,7 @@
 import logging
 import os
-from inspect import signature
-
-from functools import wraps
-from aiogram.types import Message, CallbackQuery
-from aiogram.filters import Command, Filter
-
+from datetime import datetime
+from pydantic_core import core_schema
 from logging.handlers import RotatingFileHandler
 
 
@@ -22,3 +18,7 @@ def setup_logging(log_level: str, logging_path: str):
     console_handler.setLevel(log_level)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
+
+
+def fmt_date(d: datetime):
+    return d.strftime('%d.%m.%Y в %H:%M')

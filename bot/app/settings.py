@@ -15,6 +15,9 @@ class LLMSettings(BaseModel):
 class Messages(BaseModel):
     start: str
     privacy: str
+    event_description: str
+    challenge_description: str
+
 
 class Settings(BaseModel):
     faq: list[str]

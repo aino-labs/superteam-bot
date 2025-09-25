@@ -5,7 +5,9 @@
   ],
   "messages": {
     "start": "Test start message",
-    "privacy": "test privacy message"
+    "privacy": "test privacy message",
+    "event_description": "*{title}*\n*Когда:* {event_date}\n*Где:* {location}\n*Ссылка:* {source_url}",
+    "challenge_description": "*{title}*\n*Приз:* {prize}\n*Заканчивается:* {deadline}"
   },
   "sources": {
     "events": {
