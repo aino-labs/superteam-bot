@@ -153,12 +153,16 @@ SPECTACULAR_SETTINGS = {
 
 # Celery settings
 CELERY_BEAT_SCHEDULE = {
-    "fetch-events-every-1-min": {
+    "fetch-events-every-30-min": {
         "task": "storage.api.tasks.fetch_events",
-        "schedule": crontab(minute="*"),
+        "schedule": crontab(minute="*/30"),
     },
-    "fetch-challenges-every-1-min": {
+    "fetch-challenges-every-30-min": {
         "task": "storage.api.tasks.fetch_challenges",
-        "schedule": crontab(minute="*"),
+        "schedule": crontab(minute="*/30"),
+    },
+    "cleanup-expired-every-30-min": {
+        "task": "storage.api.tasks.cleanup_expired_events_and_challenges",
+        "schedule": crontab(minute="*/30"),
     },
 }
