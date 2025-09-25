@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
-from app import APIClient
+from app.api import APIClient
 from app.cache import cached
 from app.keyboards import MenuCallback, PaginatedCallbackBase, get_paginated_keyboard, PaginatedAction
 from app.settings import settings
