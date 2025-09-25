@@ -1,0 +1,63 @@
+from celery import shared_task
+import httpx
+
+from config import env
+from events.models import Event
+from competitions.models import Competition
+from datetime import datetime
+
+# Number of retry attempts
+MAX_RETRIES = 5
+# Delay between retries in seconds
+RETRY_DELAY = 60
+
+@shared_task(bind=True, max_retries=MAX_RETRIES)
+def fetch_events(self):
+    """Fetch events from API and update DB with retry on failure."""
+    try:
+        with httpx.Client() as client:
+            response = client.get(env.env_required('EVENTS_API_URL'))
+            response.raise_for_status()
+            data = response.json()
+        for item in data['featured_items']:
+            event = item['event']
+            Event.objects.update_or_create(
+                api_id=event['api_id'],
+                defaults={
+                    'title': event['name'],
+                    'location': event['geo_address_info']['address'],
+                    'event_date': datetime.strptime(event['start_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                }
+            )
+    except httpx.RequestError as e:
+        print(f"Error fetching data: {e}")
+        raise self.retry(countdown=RETRY_DELAY, exc=e)
+    except Exception as e:
+        print(f"Error updating data: {e}")
+        raise self.retry(countdown=RETRY_DELAY, exc=e)
+
+
+@shared_task(bind=True, max_retries=MAX_RETRIES)
+def fetch_challenges(self):
+    """Fetch challenges from API and update DB with retry on failure."""
+    try:
+        with httpx.Client() as client:
+            response = client.get(env.env_required('CHALLENGES_API_URL'))
+            response.raise_for_status()
+            data = response.json()
+        for item in data:
+            Competition.objects.update_or_create(
+                api_id=item['id'],
+                defaults={
+                    'title': item['title'],
+                    'prize': item['rewardAmount'],
+                    'deadline': datetime.strptime(item['deadline'], '%Y-%m-%dT%H:%M:%S.%fZ'),
+                }
+            )
+    except httpx.RequestError as e:
+        print(f"Error fetching data: {e}")
+        raise self.retry(countdown=RETRY_DELAY, exc=e)
+    except Exception as e:
+        print(f"Error updating data: {e}")
+        raise self.retry(countdown=RETRY_DELAY, exc=e)
+
