@@ -25,7 +25,8 @@ def fetch_events(self):
                 defaults={
                     'title': event['name'],
                     'location': event['geo_address_info']['address'],
-                    'event_date': datetime.strptime(event['start_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                    'event_date': datetime.strptime(event['start_at'], '%Y-%m-%dT%H:%M:%S.%fZ'),
+                    'source_url': event['url']
                 }
             )
     except httpx.RequestError as e:
