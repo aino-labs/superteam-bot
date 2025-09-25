@@ -156,10 +156,10 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     "fetch-events-every-30-min": {
         "task": "storage.api.tasks.fetch_events",
-        "schedule": crontab(minute="*/30"),
+        "schedule": crontab(minute="*/1"),
     },
     "fetch-challenges-every-30-min": {
         "task": "storage.api.tasks.fetch_challenges",
-        "schedule": crontab(minute="*/30"),
+        "schedule": crontab(minute="*/1"),
     },
 }

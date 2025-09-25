@@ -1,5 +1,6 @@
 from celery import shared_task
 import httpx
+from urllib.parse import urljoin
 
 from config import env
 from events.models import Event
@@ -14,8 +15,9 @@ RETRY_DELAY = 60
 def fetch_events(self):
     """Fetch events from API and update DB with retry on failure."""
     try:
+        base_url = urljoin(env.env_required('EVENTS_API_URL'), 'calendar/get')
         with httpx.Client() as client:
-            response = client.get(env.env_required('EVENTS_API_URL'))
+            response = client.get(base_url, params={'api_id': env.env_required('EVENTS_FEED_ID')})
             response.raise_for_status()
             data = response.json()
         for item in data['featured_items']:
@@ -26,7 +28,7 @@ def fetch_events(self):
                     'title': event['name'],
                     'location': event['geo_address_info']['address'],
                     'event_date': datetime.strptime(event['start_at'], '%Y-%m-%dT%H:%M:%S.%fZ'),
-                    'source_url': event['url']
+                    'source_url': urljoin(env.env_required('EVENTS_SHARE_URL'), event['url'])
                 }
             )
     except httpx.RequestError as e:
@@ -52,6 +54,7 @@ def fetch_challenges(self):
                     'title': item['title'],
                     'prize': item['rewardAmount'],
                     'deadline': datetime.strptime(item['deadline'], '%Y-%m-%dT%H:%M:%S.%fZ'),
+                    'source_url': urljoin(env.env_required('CHALLENGES_SHARE_URL'), item['slug'])
                 }
             )
     except httpx.RequestError as e:

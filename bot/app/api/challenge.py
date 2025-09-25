@@ -7,3 +7,4 @@ class Challenge(BaseModel):
     title: str
     prize: str
     deadline: datetime
+    source_url: str | None

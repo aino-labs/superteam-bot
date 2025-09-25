@@ -7,7 +7,7 @@
     "start": "Test start message",
     "privacy": "test privacy message",
     "event_description": "*{title}*\n*Когда:* {event_date}\n*Где:* {location}\n*Ссылка:* {source_url}",
-    "challenge_description": "*{title}*\n*Приз:* {prize}\n*Заканчивается:* {deadline}"
+    "challenge_description": "*{title}*\n*Приз:* {prize}\n*Заканчивается:* {deadline}\n*Ссылка:* {source_url}"
   },
   "sources": {
     "events": {
