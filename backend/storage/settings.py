@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from config import env
+from celery.schedules import crontab
 
 import logging
 logging.basicConfig(filename='error.log', level=logging.DEBUG)
@@ -151,15 +152,13 @@ SPECTACULAR_SETTINGS = {
 
 
 # Celery settings
-from celery.schedules import crontab
-
 CELERY_BEAT_SCHEDULE = {
-    "fetch-events-every-30-min": {
+    "fetch-events-every-1-min": {
         "task": "storage.api.tasks.fetch_events",
-        "schedule": crontab(minute="*/30"),
+        "schedule": crontab(minute="*"),
     },
-    "fetch-challenges-every-30-min": {
+    "fetch-challenges-every-1-min": {
         "task": "storage.api.tasks.fetch_challenges",
-        "schedule": crontab(minute="*/30"),
+        "schedule": crontab(minute="*"),
     },
 }

@@ -1,5 +1,5 @@
-
 from django.db import models
+
 
 class Event(models.Model):
     api_id = models.CharField(

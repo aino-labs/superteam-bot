@@ -60,4 +60,3 @@ def fetch_challenges(self):
     except Exception as e:
         print(f"Error updating data: {e}")
         raise self.retry(countdown=RETRY_DELAY, exc=e)
-
