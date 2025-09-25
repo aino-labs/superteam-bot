@@ -1,0 +1,65 @@
+from enum import Enum
+from sys import prefix
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.filters.callback_data import CallbackData
+
+
+class PaginatedAction(Enum):
+    select = 'select'
+    page = 'page'
+    current = 'current'
+
+
+class PaginatedCallbackBase(CallbackData, prefix='paginated'):
+    action: PaginatedAction
+    value: int
+
+
+def get_paginated_keyboard(items: list[tuple], callback_class: type[PaginatedCallbackBase], page: int = 1, per_page: int = 5):
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                text=items[i][1],
+                callback_data=callback_class(action=PaginatedAction.select,
+                                                value=items[i][0]).pack()
+            )
+        ]
+        for i in range((page - 1) * per_page, min(page * per_page, len(items)))
+    ]
+
+    total_pages = (len(items) + per_page - 1) // per_page
+    if total_pages > 1:
+        nav_buttons = [
+            InlineKeyboardButton(
+                text="⬅️",
+                callback_data=callback_class(action=PaginatedAction.page,
+                                                value=page - 1 if page > 1 else total_pages).pack()
+            ),
+            InlineKeyboardButton(
+                text=f"{page}/{total_pages}",
+                callback_data=callback_class(action=PaginatedAction.current,
+                                                value=page).pack()
+            ),
+            InlineKeyboardButton(
+                text="➡️",
+                callback_data=callback_class(action=PaginatedAction.page,
+                                                value=page + 1 if page < total_pages else 1).pack()
+            ),
+        ]
+        keyboard.append(nav_buttons)
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+class MenuCallback(CallbackData, prefix='menu'):
+    command: str
+
+
+def get_menu_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text='FAQ', callback_data=MenuCallback(command='faq'))
+    builder.button(text='Events', callback_data=MenuCallback(command='events'))
+    builder.button(text='Challenges', callback_data=MenuCallback(command='challenges'))
+    builder.button(text='Privacy', callback_data=MenuCallback(command='privacy'))
+    builder.adjust(2)
+    return builder.as_markup()

@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'corsheaders',
-
+    'storage.api',
     'competitions',
     'events',
     'subscribes',
@@ -147,4 +147,19 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
+}
+
+
+# Celery settings
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "fetch-events-every-30-min": {
+        "task": "storage.api.tasks.fetch_events",
+        "schedule": crontab(minute="*/30"),
+    },
+    "fetch-challenges-every-30-min": {
+        "task": "storage.api.tasks.fetch_challenges",
+        "schedule": crontab(minute="*/30"),
+    },
 }

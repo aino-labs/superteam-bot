@@ -15,9 +15,14 @@ dependencies = [
     "gunicorn (>=23.0.0,<24.0.0)",
     "djangorestframework (>=3.16.0,<4.0.0)",
     "django-debug-toolbar (>=5.2.0,<6.0.0)",
+    "setuptools (>=80.9.0,<81.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "celery[redis] (>=5.5.3,<6.0.0)",
 ]
-
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false

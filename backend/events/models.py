@@ -1,7 +1,14 @@
+
 from django.db import models
 
-
 class Event(models.Model):
+    api_id = models.CharField(
+        'API ID',
+        max_length=64,
+        unique=True,
+        null=True,
+        blank=True,
+    )
     title = models.CharField(
         'Title',
         max_length=128,
