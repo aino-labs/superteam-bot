@@ -6,10 +6,9 @@ from events.models import Event
 from competitions.models import Competition
 from datetime import datetime
 
-# Number of retry attempts
 MAX_RETRIES = 5
-# Delay between retries in seconds
 RETRY_DELAY = 60
+
 
 @shared_task(bind=True, max_retries=MAX_RETRIES)
 def fetch_events(self):

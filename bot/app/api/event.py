@@ -7,5 +7,5 @@ class Event(BaseModel):
     event_date: datetime
     location: str
     # rsvp_link: str
-    source_url: str
+    source_url: str | None
 
