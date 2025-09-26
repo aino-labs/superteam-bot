@@ -10,5 +10,5 @@ class Subscribe(models.Model):
 
     class Meta:
         db_table = 'subscribes'
-        verbose_name = "Подписчик"
-        verbose_name_plural = "Подписчики"
+        verbose_name = "subscribe"
+        verbose_name_plural = "subscribes"

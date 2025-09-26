@@ -1,7 +1,8 @@
-from celery.signals import worker_process_init
+from celery.signals import worker_ready
 from .tasks import fetch_events, fetch_challenges
 
-@worker_process_init.connect
+
+@worker_ready.connect
 def at_start(sender, **kwargs):
     fetch_events.delay()
     fetch_challenges.delay()
