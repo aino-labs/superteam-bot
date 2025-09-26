@@ -7,5 +7,38 @@ services:
       - redis_data:/data
     restart: always
 
+  web:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: poetry run celery -A storage worker --loglevel=info
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: poetry run celery -A storage beat --loglevel=info
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  telegram-bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    restart: unless-stopped
 volumes:
   redis_data:
