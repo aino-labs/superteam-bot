@@ -1,13 +1,16 @@
+
 import httpx
 
 from app.api.challenge import Challenge
 from app.api.event import Event
+from app.config import config
 
 
 class APIClient:
     def __init__(self, base_url: str):
         self.base_url = base_url
-        self.client = httpx.AsyncClient(base_url=base_url)
+        self.client = httpx.AsyncClient(base_url=base_url,
+                                        headers={'Authorization': 'Token ' + config.api_token})
 
     async def get_challenges(self) -> list[Challenge]:
         resp = await self.client.get('/competitions/')
@@ -32,3 +35,18 @@ class APIClient:
         resp = await self.client.get(f'/events/{event_id}/')
         resp.raise_for_status()
         return Event(**resp.json())
+
+    async def get_subscribers(self):
+        resp = await self.client.get('/subscribes/')
+        resp.raise_for_status()
+        return [x['chat_id'] for x in resp.json()['results']]
+
+    async def add_subscriber(self, user_id: int):
+        resp = await self.client.post('/subscribes/', data={
+            'chat_id': str(user_id) # TODO: fix1
+        })
+        resp.raise_for_status()
+
+    async def remove_subscriber(self, user_id: int):
+        resp = await self.client.delete(f'/subscribes/by-chat-id/{user_id}/')
+        resp.raise_for_status()

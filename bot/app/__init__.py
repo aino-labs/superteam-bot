@@ -17,8 +17,9 @@ from app.handlers import common_router, faq_router, events_router, challenges_ro
 bot = Bot(config.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN))
 
 dp = Dispatcher()
+api_client = APIClient(config.api_url)
 dp['llm_service'] = LLMService(config.llm.api_key, config.llm.base_url)
-dp['api_client'] = APIClient(config.api_url)
+dp['api_client'] = api_client
 
 dp.include_routers(
     common_router,

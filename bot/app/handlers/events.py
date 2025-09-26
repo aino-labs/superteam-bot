@@ -19,7 +19,7 @@ router = Router()
 @cached('events')
 async def get_events(user_id: int, api_client: APIClient):
     data = await api_client.get_events()
-    return [(x.id, x.title) for x in data]
+    return [(x.id, f'{x.title} - {x.event_date.strftime("%d.%m.%Y")}') for x in data]
 
 
 @router.message(Command('events'))

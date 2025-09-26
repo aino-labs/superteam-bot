@@ -12,6 +12,8 @@ class Config(BaseSettings):
 
     bot_token: str
     api_url: str
+    api_token: str
+    webhook_token: str
     llm: LLMOptions
 
     logging_path: str = 'logs'
