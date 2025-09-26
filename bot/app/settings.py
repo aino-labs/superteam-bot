@@ -17,6 +17,7 @@ class Messages(BaseModel):
     privacy: str
     event_description: str
     challenge_description: str
+    notification: str
 
 
 class Settings(BaseModel):

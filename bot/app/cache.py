@@ -10,12 +10,12 @@ def make_key(user_id: int, category: str):
     return f'{category}:{user_id}'
 
 
-def cached(category: str):
+def cached(category: str, flush: bool = False):
     def decorator(func: Callable[..., Coroutine[Any, Any, Any]]):
         @wraps(func)
         async def wrapper(user_id: int, *args, **kwargs):
             key = make_key(user_id, category)
-            if key in cache:
+            if key in cache and not flush:
                 return cache[key]
             data = await func(user_id, *args, **kwargs)
             cache[key] = data

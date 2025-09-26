@@ -43,10 +43,10 @@ class APIClient:
 
     async def add_subscriber(self, user_id: int):
         resp = await self.client.post('/subscribes/', data={
-            'chat_id': str(user_id) # TODO: fix
+            'chat_id': str(user_id) # TODO: fix1
         })
         resp.raise_for_status()
 
     async def remove_subscriber(self, user_id: int):
-        resp = await self.client.delete(f'/subscribes/{user_id}/')
+        resp = await self.client.delete(f'/subscribes/by-chat-id/{user_id}/')
         resp.raise_for_status()

@@ -1,11 +1,13 @@
 from celery import shared_task
 import httpx
+from django.forms.models import model_to_dict
 
 from config import env
 from django.utils import timezone
 from events.models import Event
 from competitions.models import Competition
 from datetime import datetime
+from urllib.parse import urljoin
 
 MAX_RETRIES = 5
 RETRY_DELAY = 60
@@ -16,12 +18,14 @@ def fetch_events(self):
     """Fetch events from API and update DB with retry on failure."""
     try:
         with httpx.Client() as client:
-            response = client.get(env.env_required("EVENTS_API_URL"))
+            response = client.get(urljoin(env.env_required("EVENTS_API_URL"), '/calendar/get'),
+                                  params={'api_id': env.env_required('EVENTS_FEED_ID')})
             response.raise_for_status()
             data = response.json()
+        new_data = []
         for item in data["featured_items"]:
             event = item["event"]
-            Event.objects.update_or_create(
+            event_new, created = Event.objects.update_or_create(
                 api_id=event["api_id"],
                 defaults={
                     "title": event["name"],
@@ -29,9 +33,17 @@ def fetch_events(self):
                     "event_date": datetime.strptime(
                         event["start_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
                     ),
-                    "source_url": event["url"],
+                    "source_url": urljoin(env.env_required("EVENTS_SHARE_URL"), event["url"]),
                 },
             )
+            if created:
+                print('event is new')
+                event_data = model_to_dict(event_new)
+                event_data['event_date'] = event_data['event_date'].isoformat()
+                new_data.append(event_data)
+        # fire webhook
+        if new_data:
+            send_event_webhook.delay(new_data)
     except httpx.RequestError as e:
         print(f"Error fetching data: {e}")
         raise self.retry(countdown=RETRY_DELAY, exc=e)
@@ -48,7 +60,7 @@ def fetch_challenges(self):
             response = client.get(env.env_required("CHALLENGES_API_URL"))
             response.raise_for_status()
             data = response.json()
-        # new_data = []
+        new_data = []
         for item in data:
             competition, created = Competition.objects.update_or_create(
                 api_id=item["id"],
@@ -60,8 +72,6 @@ def fetch_challenges(self):
                     ),
                 },
             )
-            # if created:
-            #     new_data.append(competition.id)
 
     except httpx.RequestError as e:
         print(f"Error fetching data: {e}")
@@ -87,7 +97,7 @@ def cleanup_expired_events_and_challenges():
 
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
-def notify_telegram_bot(self, event_data):
+def send_event_webhook(self, event_data: list[Event]):
     try:
         with httpx.Client() as client:
             response = client.post(env.env_required('WEBHOOK_URL'),
@@ -95,7 +105,7 @@ def notify_telegram_bot(self, event_data):
                                    timeout=10,
                                    headers={'Authorization': env.env_required('WEBHOOK_TOKEN')})
             response.raise_for_status()
-            print(f"Notification sent for event {event_data['id']}")
+            print(f"Notification sent for {len(event_data)} events")
     except httpx.RequestError as e:
-        print(f"Failed to send notification for event {event_data['id']}: {e}")
+        print(f"Failed to send notification for {len(event_data)} events: {e}")
         self.retry(exc=e)
