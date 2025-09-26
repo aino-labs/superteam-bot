@@ -84,3 +84,18 @@ def cleanup_expired_events_and_challenges():
         Competition.objects.filter(deadline__lt=now).delete()
     except Exception as e:
         print(f"Error delete data: {e}")
+
+
+@shared_task(bind=True, max_retries=5, default_retry_delay=60)
+def notify_telegram_bot(self, event_data):
+    try:
+        with httpx.Client() as client:
+            response = client.post(env.env_required('WEBHOOK_URL'),
+                                   json=event_data,
+                                   timeout=10,
+                                   headers={'Authorization': env.env_required('WEBHOOK_TOKEN')})
+            response.raise_for_status()
+            print(f"Notification sent for event {event_data['id']}")
+    except httpx.RequestError as e:
+        print(f"Failed to send notification for event {event_data['id']}: {e}")
+        self.retry(exc=e)

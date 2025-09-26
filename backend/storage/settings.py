@@ -43,9 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'drf_spectacular',
     'corsheaders',
-    'storage.api',
+    'api',
     'competitions',
     'events',
     'subscribes',
@@ -144,6 +145,12 @@ CORS_ALLOWED_ORIGINS = env.env_list_with_default(
 # REST Django framework
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 SPECTACULAR_SETTINGS = {
@@ -154,15 +161,15 @@ SPECTACULAR_SETTINGS = {
 # Celery settings
 CELERY_BEAT_SCHEDULE = {
     "fetch-events-every-30-min": {
-        "task": "storage.api.tasks.fetch_events",
+        "task": "api.tasks.fetch_events",
         "schedule": crontab(minute="*/1"),
     },
     "fetch-challenges-every-30-min": {
-        "task": "storage.api.tasks.fetch_challenges",
+        "task": "api.tasks.fetch_challenges",
         "schedule": crontab(minute="*/1"),
     },
     "cleanup-expired-every-30-min": {
-        "task": "storage.api.tasks.cleanup_expired_events_and_challenges",
+        "task": "api.tasks.cleanup_expired_events_and_challenges",
         "schedule": crontab(minute="*/30"),
     },
 }
