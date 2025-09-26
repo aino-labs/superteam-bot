@@ -48,8 +48,9 @@ def fetch_challenges(self):
             response = client.get(env.env_required("CHALLENGES_API_URL"))
             response.raise_for_status()
             data = response.json()
+        # new_data = []
         for item in data:
-            Competition.objects.update_or_create(
+            competition, created = Competition.objects.update_or_create(
                 api_id=item["id"],
                 defaults={
                     "title": item["title"],
@@ -59,6 +60,9 @@ def fetch_challenges(self):
                     ),
                 },
             )
+            # if created:
+            #     new_data.append(competition.id)
+
     except httpx.RequestError as e:
         print(f"Error fetching data: {e}")
         raise self.retry(countdown=RETRY_DELAY, exc=e)
